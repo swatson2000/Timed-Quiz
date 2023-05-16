@@ -20,7 +20,7 @@ const questions = [
       {
         question: "How does a FOR loop star?",
         answers: [
-            {text: "for (i<=5;i++", correct: false},
+            {text: "for (i<=5;i++)", correct: false},
             {text: "for i=1 to 5", correct: false},
             {text: "for (i=0;i<=5)", correct: false},
             {text: "for(i=0;i<=5;i++)", correct: true},
@@ -50,11 +50,14 @@ const questionElement = document.getElementById("question");
 const answerButtons = document.getElementById("answer-buttons");
 const submitButton = document.getElementById("submit-btn");
 const timerElement = document.getElementById("timer");
+const toLeaderboard = document.getElementById("show-leaderboard");
+
 
 let currentQuestionIndex = 0;
 let score = 0;
 let timer;
 let timeLeft = 20;
+let leaderboardData = [];
 
 function startQuiz(){
     currentQuestionIndex = 0;
@@ -75,7 +78,15 @@ function updateTimer() {
   if (timeLeft <= 0) {
       clearInterval(timer);
       showScore();
+      
+  
   }
+}
+
+
+function stopTimer() {
+  timeLeft = 20;
+  timer = 0;
 }
 
 function showQuestion(){
@@ -123,34 +134,25 @@ function selectAnswer(e){
   submitButton.style.display = "block";
   }
 
+
+
 function showScore(){
   resetState();
   questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
   submitButton.innerHTML = "Play Again";
   submitButton.style.display = "block";
-  localStorage.setItem(player.name, score)
-  var storedData = localStorage.getItem('playerData');
-var leaderboardData = JSN.parse(storedData);
 
-leaderboardData.sort(function(a,b) {
-return b.score - a.score;
-});
-
-var leaderboardContainer = document.getElementById('leaderboard');
-
-leaderboardContainer.innerHTML = '';
-
-leaderboardData.forEach(function(player, index) {
-  var playerName = player.name;
-  var playerScore = player.score;
-
-  var leaderboardEntry = document.createElement('div');
-  leaderboardEntry.textContent = playerName + ': ' + playerScore;
-
-  leaderboardContainer.appendChild(leaderboardEntry);
-})
-
+  var playerName = 'promt("Enter your name:");'
+  var entry = {
+    name: playerName, // You can change this to retrieve the name from the user
+    score: score,
+  };
+  leaderboardData.push(entry); // Add the entry to the leaderboard data array
+localStorage.setItem("leaderboardData", JSON.stringify(leaderboardData));
 }
+
+
+
 
   function handleSubmitButton() {
     currentQuestionIndex++;
@@ -158,21 +160,31 @@ leaderboardData.forEach(function(player, index) {
       showQuestion();
     }else{
       showScore();
+      
+      
+      }
+      
     }
 
-  }
+  
 submitButton.addEventListener("click", ()=>{
   if(currentQuestionIndex < questions.length){
     handleSubmitButton();
   }else{
     startQuiz();
+    
   
   }
 })
+function showLeaderboard() {
+    window.location.href = "leaderboard.html";
+    localStorage.setItem("leaderboardData", JSON.stringify(leaderboardData));
+}
 
 
 
+  toLeaderboard.addEventListener("click", ()=>{
+   showLeaderboard();
+  });
 
-
-
-startQuiz();
+ startQuiz();
